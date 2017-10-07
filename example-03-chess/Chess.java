@@ -4,14 +4,14 @@ public class Chess {
 	public static void main(String[] args) {
 		Scanner console = new Scanner(System.in);
 		System.out.print("Введите координаты 1-ой клетки: ");
-		int row1 = console.nextInt();
 		int col1 = console.nextInt();
+		int row1 = console.nextInt();
 		System.out.print("Введите координаты 2-ой клетки: ");
-		int row2 = console.nextInt();
 		int col2 = console.nextInt();
+		int row2 = console.nextInt();
 		int rowDiff = Math.abs(row1 - row2);
 		int colDiff = Math.abs(col1 - col2);
-		System.out.println("Какая фигра может сделать ход из одной во вторую клетку?");
+		System.out.println("Какая фигура может сделать ход из одной во вторую клетку?");
 		// слон
 		boolean bishop = rowDiff == colDiff;
 		System.out.print("Слон - ");
