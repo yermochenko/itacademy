@@ -31,7 +31,7 @@ public class GameImitation {
 			totalDamage = damage1 * (1 + percent);
 		} else {
 			percent = (defense2 - attack1) * 0.03;
-			if(percent > 0.3) {
+			if(percent < 0.3) {
 				percent = 0.3;
 			}
 			totalDamage = damage1 * (1 - percent);
@@ -68,7 +68,7 @@ public class GameImitation {
 				System.out.print("Здоровье 1-ого персонажа ");
 				System.out.print(health1);
 				System.out.println(" очков");
-				// 2-ой персонаж атакует 1-ый персонаж");
+				// 2-ой персонаж атакует 1-ый персонаж
 			} else {
 				System.out.println("1-ый персонаж убит");
 			}
