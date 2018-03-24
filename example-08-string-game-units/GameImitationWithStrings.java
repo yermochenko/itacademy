@@ -40,28 +40,24 @@ public class GameImitationWithStrings {
 		return person;
 	}
 
-	static void outAttackMessage(Person attacking, Person defensible) {
+	static void outMessage(Person attacking, Person defensible, String message) {
 		System.out.print("Персонаж ");
 		System.out.print(attacking.className);
 		System.out.print(" ");
 		System.out.print(attacking.name);
-		System.out.print(" нападает на персонаж ");
+		System.out.print(message);
 		System.out.print(defensible.className);
 		System.out.print(" ");
 		System.out.print(defensible.name);
 		System.out.println(".");
 	}
 
+	static void outAttackMessage(Person attacking, Person defensible) {
+		outMessage(attacking, defensible, " нападает на персонаж ");
+	}
+
 	static void outCounterstrikeMessage(Person attacking, Person defensible) {
-		System.out.print("Персонаж ");
-		System.out.print(attacking.className);
-		System.out.print(" ");
-		System.out.print(attacking.name);
-		System.out.print(" даёт сдачи персонажу ");
-		System.out.print(defensible.className);
-		System.out.print(" ");
-		System.out.print(defensible.name);
-		System.out.println(".");
+		outMessage(attacking, defensible, " даёт сдачи персонажу ");
 	}
 
 	static void outKilledMessage(Person person) {
