@@ -1,3 +1,5 @@
+import java.awt.Color;
+
 import javax.swing.JFrame;
 
 public class Example13Form {
@@ -8,12 +10,7 @@ public class Example13Form {
 		window.setResizable(false);
 		window.setLocationRelativeTo(null);
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		Tank tank = new Tank();
-		tank.x = 150;
-		tank.y = 100;
-		tank.width = 50;
-		tank.length = 75;
-		tank.rotation = Math.toRadians(40);
+		Tank tank = new Tank(150, 100, 50, 75, Math.toRadians(40), 5, 30, new Color(67, 72, 30), new Color(92, 100, 40));
 		window.add(tank);
 		window.setVisible(true);
 	}

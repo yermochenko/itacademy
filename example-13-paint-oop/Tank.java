@@ -6,23 +6,41 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.RenderingHints;
+import java.awt.Stroke;
 
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
 
 public class Tank extends Canvas {
-	int x;
-	int y;
-	int width;
-	int length;
-	double rotation;
+	private int x;
+	private int y;
+	private int width;
+	private int length;
+	private double rotation;
+	private Color baseColor;
+	private Color towerColor;
+	private Stroke gunWidth;
+	private int gunLength;
 
-	@Override
-	public void paint(Graphics g) {
-		super.paint(g);
-		Graphics2D g2d = (Graphics2D)g;
-		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		g2d.setColor(new Color(67, 72, 30));
+	private Polygon basePoly;
+	private int towerDiameter;
+	private int towerX;
+	private int towerY;
+	private int gunBeginX;
+	private int gunBeginY;
+	private int gunEndX;
+	private int gunEndY;
+
+	public Tank(int x, int y, int width, int length, double rotation, int gunWidth, int gunLength, Color baseColor, Color towerColor) {
+		this.x = x;
+		this.y = y;
+		this.width = width;
+		this.length = length;
+		this.rotation = rotation;
+		this.gunWidth = new BasicStroke(gunWidth);
+		this.gunLength = gunLength;
+		this.baseColor = baseColor;
+		this.towerColor = towerColor;
 		Point p1 = new Point(x - width / 2, y - length / 2);
 		Point p2 = new Point(x + width / 2, y - length / 2);
 		Point p3 = new Point(x + width / 2, y + length / 2);
@@ -31,24 +49,38 @@ public class Tank extends Canvas {
 		p2 = rotate(p2);
 		p3 = rotate(p3);
 		p4 = rotate(p4);
-		Polygon poly = new Polygon();
-		poly.addPoint(p1.x, p1.y);
-		poly.addPoint(p2.x, p2.y);
-		poly.addPoint(p3.x, p3.y);
-		poly.addPoint(p4.x, p4.y);
-		g2d.fillPolygon(poly);
-		int diameter = 3 * Math.min(width, length) / 4;
-		g2d.setColor(new Color(92, 100, 40));
-		g2d.fillOval(x - diameter / 2, y - diameter / 2, diameter, diameter);
-		Point d1 = new Point(x, y - diameter / 2);
-		Point d2 = new Point(x, y - 3 * diameter / 2);
-		d1 = rotate(d1);
-		d2 = rotate(d2);
-		g2d.setStroke(new BasicStroke(5));
-		g2d.drawLine(d1.x, d1.y, d2.x, d2.y);
+		this.basePoly = new Polygon();
+		this.basePoly.addPoint(p1.x, p1.y);
+		this.basePoly.addPoint(p2.x, p2.y);
+		this.basePoly.addPoint(p3.x, p3.y);
+		this.basePoly.addPoint(p4.x, p4.y);
+		this.towerDiameter = 3 * Math.min(width, length) / 4;
+		this.towerX = x - towerDiameter / 2;
+		this.towerY = y - towerDiameter / 2;
+		Point gunBegin = new Point(x, y - towerDiameter / 2);
+		Point gunEnd = new Point(x, y - towerDiameter / 2 - gunLength);
+		gunBegin = rotate(gunBegin);
+		gunEnd = rotate(gunEnd);
+		this.gunBeginX = gunBegin.x;
+		this.gunBeginY = gunBegin.y;
+		this.gunEndX = gunEnd.x;
+		this.gunEndY = gunEnd.y;
 	}
 
-	Point rotate(Point p) {
+	@Override
+	public void paint(Graphics g) {
+		super.paint(g);
+		Graphics2D g2d = (Graphics2D)g;
+		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g2d.setColor(baseColor);
+		g2d.fillPolygon(basePoly);
+		g2d.setColor(towerColor);
+		g2d.fillOval(towerX, towerY, towerDiameter, towerDiameter);
+		g2d.setStroke(gunWidth);
+		g2d.drawLine(gunBeginX, gunBeginY, gunEndX, gunEndY);
+	}
+
+	private Point rotate(Point p) {
 		Point q = new Point();
 		q.x = (int)(x + (p.x - x) * cos(rotation) - (p.y - y) * sin(rotation));
 		q.y = (int)(y + (p.x - x) * sin(rotation) + (p.y - y) * cos(rotation));
