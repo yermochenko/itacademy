@@ -3,68 +3,43 @@ import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
 
-import static java.lang.Math.cos;
-import static java.lang.Math.sin;
-
 public class Tank extends Canvas {
-	private int x;
-	private int y;
-	private int width;
-	private int length;
-	private double rotation;
-	private Color baseColor;
-	private Color towerColor;
-	private Stroke gunWidth;
-	private int gunLength;
+	private static final int MIN_SIZE = 5;
 
-	private Polygon basePoly;
+	private int baseWidth = MIN_SIZE;
+	private int baseLength = MIN_SIZE;
 	private int towerDiameter;
+	private int gunLength;
+	private Stroke gunWidth = new BasicStroke(3);
+
+	private double centerX;
+	private double centerY;
+	private double baseRotation;
+
+	private Polygon basePoly = new Polygon();
+	private Color baseColor = Color.DARK_GRAY;
+	private Color towerColor = Color.GRAY;
 	private int towerX;
 	private int towerY;
-	private int gunBeginX;
-	private int gunBeginY;
 	private int gunEndX;
 	private int gunEndY;
 
-	public Tank(int x, int y, int width, int length, double rotation, int gunWidth, int gunLength, Color baseColor, Color towerColor) {
-		this.x = x;
-		this.y = y;
-		this.width = width;
-		this.length = length;
-		this.rotation = rotation;
-		this.gunWidth = new BasicStroke(gunWidth);
-		this.gunLength = gunLength;
-		this.baseColor = baseColor;
-		this.towerColor = towerColor;
-		Point p1 = new Point(x - width / 2, y - length / 2);
-		Point p2 = new Point(x + width / 2, y - length / 2);
-		Point p3 = new Point(x + width / 2, y + length / 2);
-		Point p4 = new Point(x - width / 2, y + length / 2);
-		p1 = rotate(p1);
-		p2 = rotate(p2);
-		p3 = rotate(p3);
-		p4 = rotate(p4);
-		this.basePoly = new Polygon();
-		this.basePoly.addPoint(p1.x, p1.y);
-		this.basePoly.addPoint(p2.x, p2.y);
-		this.basePoly.addPoint(p3.x, p3.y);
-		this.basePoly.addPoint(p4.x, p4.y);
-		this.towerDiameter = 3 * Math.min(width, length) / 4;
-		this.towerX = x - towerDiameter / 2;
-		this.towerY = y - towerDiameter / 2;
-		Point gunBegin = new Point(x, y - towerDiameter / 2);
-		Point gunEnd = new Point(x, y - towerDiameter / 2 - gunLength);
-		gunBegin = rotate(gunBegin);
-		gunEnd = rotate(gunEnd);
-		this.gunBeginX = gunBegin.x;
-		this.gunBeginY = gunBegin.y;
-		this.gunEndX = gunEnd.x;
-		this.gunEndY = gunEnd.y;
+	public Tank(int baseWidth, int baseLength, int towerDiameter) {
+		if(baseWidth >= MIN_SIZE && baseLength >= MIN_SIZE && towerDiameter <= baseWidth && baseWidth <= baseLength) {
+			this.baseWidth = baseWidth;
+			this.baseLength = baseLength;
+			this.towerDiameter = towerDiameter;
+			this.gunLength = baseWidth;
+		}
+		recalc();
+	}
+
+	public Tank(int baseWidth, int baseLength) {
+		this(baseWidth, baseLength, 3 * baseWidth / 4);
 	}
 
 	@Override
@@ -72,18 +47,80 @@ public class Tank extends Canvas {
 		super.paint(g);
 		Graphics2D g2d = (Graphics2D)g;
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g2d.setColor(Color.WHITE);
+		g2d.fillRect(0, 0, getWidth() - 1, getHeight() - 1);
+		g2d.setColor(Color.BLACK);
+		g2d.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
 		g2d.setColor(baseColor);
 		g2d.fillPolygon(basePoly);
 		g2d.setColor(towerColor);
-		g2d.fillOval(towerX, towerY, towerDiameter, towerDiameter);
 		g2d.setStroke(gunWidth);
-		g2d.drawLine(gunBeginX, gunBeginY, gunEndX, gunEndY);
+		g2d.drawLine((int)centerX, (int)centerY, gunEndX, gunEndY);
+		g2d.fillOval(towerX, towerY, towerDiameter, towerDiameter);
 	}
 
-	private Point rotate(Point p) {
-		Point q = new Point();
-		q.x = (int)(x + (p.x - x) * cos(rotation) - (p.y - y) * sin(rotation));
-		q.y = (int)(y + (p.x - x) * sin(rotation) + (p.y - y) * cos(rotation));
-		return q;
+	public void resetPosition() {
+		centerX = getWidth() / 2;
+		centerY = getHeight() / 2;
+		recalc();
+	}
+
+	public void turn(double angle) {
+		baseRotation += angle;
+		recalc();
+	}
+
+	public void move(double distance) {
+		Vector center = new Vector(centerX, centerY);
+		Vector direction = new Vector(0, -distance).rotate(baseRotation);
+		center = direction.add(center);
+		centerX = center.getX();
+		centerY = center.getY();
+		recalc();
+	}
+
+	public void setBaseColor(Color baseColor) {
+		this.baseColor = baseColor;
+	}
+
+	public void setTowerColor(Color towerColor) {
+		this.towerColor = towerColor;
+	}
+
+	public void setGunLength(int gunLength) {
+		this.gunLength = gunLength;
+	}
+
+	public void setGunWidth(int gunWidth) {
+		this.gunWidth = new BasicStroke(gunWidth);
+		repaint();
+	}
+
+	private void recalc() {
+		// вычисляем полуширину основания танка
+		double width = baseWidth / 2.0;
+		// вычисляем полувысоту основания танка
+		double length = baseLength / 2.0;
+		// координаты центра
+		Vector center = new Vector(centerX, centerY);
+		// координаты вершин основания танка
+		Vector b1 = new Vector(-width, -length).rotate(baseRotation).add(center);
+		Vector b2 = new Vector(+width, -length).rotate(baseRotation).add(center);
+		Vector b3 = new Vector(+width, +length).rotate(baseRotation).add(center);
+		Vector b4 = new Vector(-width, +length).rotate(baseRotation).add(center);
+		basePoly.reset();
+		basePoly.addPoint((int)b1.getX(), (int)b1.getY());
+		basePoly.addPoint((int)b2.getX(), (int)b2.getY());
+		basePoly.addPoint((int)b3.getX(), (int)b3.getY());
+		basePoly.addPoint((int)b4.getX(), (int)b4.getY());
+		// параметры башни танка
+		int diameter = towerDiameter / 2;
+		towerX = (int)(centerX - diameter);
+		towerY = (int)(centerY - diameter);
+		// координата конца дула танка
+		Vector g = new Vector(0, -3 * (diameter + gunLength) / 4).rotate(baseRotation).add(center);
+		gunEndX = (int)g.getX();
+		gunEndY = (int)g.getY();
+		repaint();
 	}
 }
