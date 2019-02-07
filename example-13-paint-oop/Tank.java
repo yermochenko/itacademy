@@ -89,6 +89,7 @@ public class Tank extends Canvas {
 
 	public void setGunLength(int gunLength) {
 		this.gunLength = gunLength;
+		recalc();
 	}
 
 	public void setGunWidth(int gunWidth) {
