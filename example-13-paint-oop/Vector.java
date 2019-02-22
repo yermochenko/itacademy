@@ -1,6 +1,7 @@
 import static java.lang.Math.sin;
 import static java.lang.Math.cos;
 import static java.lang.Math.toRadians;
+import static java.lang.Math.hypot;
 
 public class Vector {
 	private double x;
@@ -21,6 +22,18 @@ public class Vector {
 
 	public double getY() {
 		return y;
+	}
+
+	public double getLength() {
+		return hypot(x, y);
+	}
+
+	public void setLength(double length) {
+		if(getLength() > 0.001) {
+			length /= getLength();
+			x *= length;
+			y *= length;
+		}
 	}
 
 	public Vector rotate(double angle) {

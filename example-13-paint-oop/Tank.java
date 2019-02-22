@@ -16,9 +16,9 @@ public class Tank extends Canvas {
 	private int gunLength;
 	private Stroke gunWidth = new BasicStroke(3);
 
-	private double centerX;
-	private double centerY;
+	private Vector center = new Vector(0, 0);
 	private double baseRotation;
+	private Vector target = new Vector(0, 0);
 
 	private Polygon basePoly = new Polygon();
 	private Color baseColor = Color.DARK_GRAY;
@@ -55,27 +55,31 @@ public class Tank extends Canvas {
 		g2d.fillPolygon(basePoly);
 		g2d.setColor(towerColor);
 		g2d.setStroke(gunWidth);
-		g2d.drawLine((int)centerX, (int)centerY, gunEndX, gunEndY);
+		g2d.drawLine((int)center.getX(), (int)center.getY(), gunEndX, gunEndY);
 		g2d.fillOval(towerX, towerY, towerDiameter, towerDiameter);
 	}
 
 	public void resetPosition() {
-		centerX = getWidth() / 2;
-		centerY = getHeight() / 2;
+		center = new Vector(getWidth() / 2, getHeight() / 2);
 		recalc();
 	}
 
-	public void turn(double angle) {
+	public void turnTank(double angle) {
 		baseRotation += angle;
 		recalc();
 	}
 
+	public void turnTower(int x, int y) {
+		Vector target = new Vector(x, y);
+		if(new Vector(center, target).getLength() > 0.001) {
+			this.target = target;
+		}
+		recalc();
+	}
+
 	public void move(double distance) {
-		Vector center = new Vector(centerX, centerY);
 		Vector direction = new Vector(0, -distance).rotate(baseRotation);
 		center = direction.add(center);
-		centerX = center.getX();
-		centerY = center.getY();
 		recalc();
 	}
 
@@ -102,8 +106,6 @@ public class Tank extends Canvas {
 		double width = baseWidth / 2.0;
 		// вычисляем полувысоту основания танка
 		double length = baseLength / 2.0;
-		// координаты центра
-		Vector center = new Vector(centerX, centerY);
 		// координаты вершин основания танка
 		Vector b1 = new Vector(-width, -length).rotate(baseRotation).add(center);
 		Vector b2 = new Vector(+width, -length).rotate(baseRotation).add(center);
@@ -116,10 +118,12 @@ public class Tank extends Canvas {
 		basePoly.addPoint((int)b4.getX(), (int)b4.getY());
 		// параметры башни танка
 		int diameter = towerDiameter / 2;
-		towerX = (int)(centerX - diameter);
-		towerY = (int)(centerY - diameter);
+		towerX = (int)(center.getX() - diameter);
+		towerY = (int)(center.getY() - diameter);
 		// координата конца дула танка
-		Vector g = new Vector(0, -3 * (diameter + gunLength) / 4).rotate(baseRotation).add(center);
+		Vector g = new Vector(center, target);
+		g.setLength(3 * (diameter + gunLength) / 4);
+		g = g.add(center);
 		gunEndX = (int)g.getX();
 		gunEndY = (int)g.getY();
 		repaint();

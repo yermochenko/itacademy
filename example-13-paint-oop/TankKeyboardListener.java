@@ -17,12 +17,12 @@ public class TankKeyboardListener extends KeyAdapter {
 	public void keyPressed(KeyEvent e) {
 		switch(e.getKeyCode()) {
 			case KEY_A_CODE: {
-				window.getTank().turn(-1);
+				window.getTank().turnTank(-1);
 				window.getTextLabel().setText("Turn letf");
 				break;
 			}
 			case KEY_D_CODE: {
-				window.getTank().turn(1);
+				window.getTank().turnTank(1);
 				window.getTextLabel().setText("Turn right");
 				break;
 			}
@@ -37,6 +37,5 @@ public class TankKeyboardListener extends KeyAdapter {
 				break;
 			}
 		}
-		window.getTank().repaint();
 	}
 }

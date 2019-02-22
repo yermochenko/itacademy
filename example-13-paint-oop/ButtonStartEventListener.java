@@ -18,6 +18,7 @@ public class ButtonStartEventListener implements ActionListener {
 		tank.setBaseColor(new Color(67, 72, 30));
 		tank.setTowerColor(new Color(92, 100, 40));
 		tank.addKeyListener(new TankKeyboardListener(window));
+		tank.addMouseMotionListener(new TowerMouseListener(window));
 		window.setTank(tank);
 		tank.resetPosition();
 		tank.requestFocus();
