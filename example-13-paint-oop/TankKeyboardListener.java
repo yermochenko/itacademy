@@ -13,27 +13,66 @@ public class TankKeyboardListener extends KeyAdapter {
 		this.window = window;
 	}
 
+	private boolean isPressedKeyA;
+	private boolean isPressedKeyD;
+	private boolean isPressedKeyS;
+	private boolean isPressedKeyW;
+
 	@Override
 	public void keyPressed(KeyEvent e) {
 		switch(e.getKeyCode()) {
 			case KEY_A_CODE: {
-				window.getTank().turnTank(-1);
-				window.getTextLabel().setText("Turn letf");
+				isPressedKeyA = true;
 				break;
 			}
 			case KEY_D_CODE: {
-				window.getTank().turnTank(1);
-				window.getTextLabel().setText("Turn right");
+				isPressedKeyD = true;
 				break;
 			}
 			case KEY_W_CODE: {
-				window.getTank().move(1);
-				window.getTextLabel().setText("Move forward");
+				isPressedKeyW = true;
 				break;
 			}
 			case KEY_S_CODE: {
-				window.getTank().move(-1);
-				window.getTextLabel().setText("Move backward");
+				isPressedKeyS = true;
+				break;
+			}
+		}
+		if(isPressedKeyA) {
+			window.getTank().turnTank(-1);
+			window.getTextLabel().setText("Turn letf");
+		}
+		if(isPressedKeyD) {
+			window.getTank().turnTank(1);
+			window.getTextLabel().setText("Turn right");
+		}
+		if(isPressedKeyW) {
+			window.getTank().move(1);
+			window.getTextLabel().setText("Move forward");
+		}
+		if(isPressedKeyS) {
+			window.getTank().move(-1);
+			window.getTextLabel().setText("Move backward");
+		}
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		switch(e.getKeyCode()) {
+			case KEY_A_CODE: {
+				isPressedKeyA = false;
+				break;
+			}
+			case KEY_D_CODE: {
+				isPressedKeyD = false;
+				break;
+			}
+			case KEY_W_CODE: {
+				isPressedKeyW = false;
+				break;
+			}
+			case KEY_S_CODE: {
+				isPressedKeyS = false;
 				break;
 			}
 		}
