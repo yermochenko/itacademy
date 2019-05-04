@@ -7,7 +7,8 @@ import java.awt.Polygon;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
+import java.io.IOException;
+import java.util.List;
 
 public class Tank extends Canvas {
 	private static final int MIN_SIZE = 5;
@@ -31,7 +32,7 @@ public class Tank extends Canvas {
 	private int gunEndX;
 	private int gunEndY;
 
-	private ArrayList<Enemy> enemies = new ArrayList<>();
+	private List<Enemy> enemies;
 
 	private int repaintableSize;
 
@@ -42,9 +43,14 @@ public class Tank extends Canvas {
 			this.towerDiameter = towerDiameter;
 			this.gunLength = baseWidth;
 		}
-		enemies.add(new Enemy(Color.RED, 100, 100, 20));
-		enemies.add(new Enemy(Color.GREEN, 400, 100, 20));
-		enemies.add(new Enemy(Color.BLUE, 100, 400, 20));
+//		enemies.add(new Enemy(Color.RED, 100, 100, 20));
+//		enemies.add(new Enemy(Color.GREEN, 400, 100, 20));
+//		enemies.add(new Enemy(Color.BLUE, 100, 400, 20));
+		try {
+			enemies = TextFileReader.readEnemies("enemies.txt");
+		} catch(IOException e) {
+			System.out.println("Ошибка");
+		}
 		recalc();
 	}
 
